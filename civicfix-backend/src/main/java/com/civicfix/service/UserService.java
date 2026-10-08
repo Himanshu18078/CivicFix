@@ -1,5 +1,6 @@
 package com.civicfix.service;
 
+import com.civicfix.dto.LoginRequest;
 import com.civicfix.dto.RegisterRequest;
 import com.civicfix.dto.UserResponse;
 import com.civicfix.entity.Role;
@@ -43,6 +44,26 @@ public class UserService {
         response.setPhone(savedUser.getPhone());
         response.setRole(savedUser.getRole());
         response.setCreatedAt(savedUser.getCreatedAt());
+
+        return response;
+    }
+    public UserResponse loginUser(LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Wrong Email or Password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Wrong Email or Password");
+        }
+
+        UserResponse response = new UserResponse();
+
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setPhone(user.getPhone());
+        response.setRole(user.getRole());
+        response.setCreatedAt(user.getCreatedAt());
 
         return response;
     }
