@@ -1,6 +1,7 @@
 package com.civicfix.controller;
 
 import com.civicfix.dto.LoginRequest;
+import com.civicfix.dto.LoginResponse;
 import com.civicfix.dto.RegisterRequest;
 import com.civicfix.dto.UserResponse;
 import com.civicfix.service.UserService;
@@ -23,14 +24,16 @@ public class UserController {
 
         UserResponse response = userService.registerUser(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> loginUser(
+    public ResponseEntity<LoginResponse> loginUser(
             @Valid @RequestBody LoginRequest request) {
 
-        UserResponse response = userService.loginUser(request);
+        LoginResponse response = userService.loginUser(request);
 
         return ResponseEntity.ok(response);
     }

@@ -1,6 +1,7 @@
 package com.civicfix.service;
 
 import com.civicfix.dto.LoginRequest;
+import com.civicfix.dto.LoginResponse;
 import com.civicfix.dto.RegisterRequest;
 import com.civicfix.dto.UserResponse;
 import com.civicfix.entity.Role;
@@ -18,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public UserResponse registerUser(RegisterRequest request) {
 
@@ -47,24 +49,35 @@ public class UserService {
 
         return response;
     }
-    public UserResponse loginUser(LoginRequest request) {
+    public LoginResponse loginUser(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Wrong Email or Password"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Wrong Email or Password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())) {
+
             throw new IllegalArgumentException("Wrong Email or Password");
         }
 
-        UserResponse response = new UserResponse();
+        String token = jwtService.generateToken(user.getEmail());
 
-        response.setId(user.getId());
-        response.setName(user.getName());
-        response.setEmail(user.getEmail());
-        response.setPhone(user.getPhone());
-        response.setRole(user.getRole());
-        response.setCreatedAt(user.getCreatedAt());
+        UserResponse userResponse = new UserResponse();
 
-        return response;
+        userResponse.setId(user.getId());
+        userResponse.setName(user.getName());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setPhone(user.getPhone());
+        userResponse.setRole(user.getRole());
+        userResponse.setCreatedAt(user.getCreatedAt());
+
+        LoginResponse loginResponse = new LoginResponse();
+
+        loginResponse.setToken(token);
+        loginResponse.setUser(userResponse);
+
+        return loginResponse;
     }
 }
