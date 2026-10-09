@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
 
+public class User {
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean enabled = true;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
